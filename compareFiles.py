@@ -7,7 +7,7 @@ LOG=False
 
 gStyle.SetOptStat(False)
 gROOT.SetBatch(True)
-    
+
 try: fileNames=argv[1:]
 except:
     print "No files specified"
@@ -34,11 +34,12 @@ for key in keys:
     for lp in range(len(files)):
         file=files[lp]
         fileName=fileNames[lp]
-        
+
         file.cd()
         h=file.Get(key.GetName())
+        #h.Rebin(4)
         hists.append(h)
-        
+
         if NORM:h.Scale(1./h.Integral())
 
         if h.GetMaximum()>max: max=h.GetMaximum()
@@ -51,18 +52,26 @@ for key in keys:
 
     for lp in range(len(hists)):
         h=hists[lp]
-        
+
         if lp==0:
             if LOG or key.GetName() == "jet_eta":
               c.SetLogy(True)
               h.SetMaximum(100*max)
-            else: 
+            else:
               c.SetLogy(False)
-              h.SetMaximum(1.5*max)
-            h.Draw()
-        else: h.Draw("SAME")
-
+              h.SetMaximum(2*max)
+            h.Draw("hist")
+            #if type(h) == type(TProfile):
+                #h.Draw("p")
+            #else:
+                #h.Draw()
+        else:
+            h.Draw("histSAME")
+            #if type(h) == type(TProfile):
+                #h.Draw("SAMEp")
+            #else:
+                #h.Draw("SAME")
     l.Draw("SAME")
     c.SaveAs("plots/"+key.GetName()+".pdf")
     c.SaveAs("plots/"+key.GetName()+".png")
-            
+
